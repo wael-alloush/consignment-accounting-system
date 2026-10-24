@@ -1,13 +1,628 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "mysql"
+}
+
+enum TenantStatus {
+  trial
+  active
+  suspended
+  expired
+}
+
+enum BillingPeriod {
+  weekly
+  monthly
+  yearly
+}
+
+enum PaymentStatus {
+  paid
+  pending
+  failed
+}
+
+enum UserRole {
+  super_admin
+  store_admin
+  cashier
+  vendor
+}
+
+enum UserStatus {
+  active
+  inactive
+}
+
+enum CommissionType {
+  percentage
+  fixed
+}
+
+/// How a fixed commission is applied: per sold unit, or once per sale line.
+enum CommissionBasis {
+  per_unit
+  per_line
+}
+
+enum IntakeStatus {
+  active
+  completed
+  archived
+}
+
+enum SaleStatus {
+  completed
+  voided
+}
+
+enum SettlementStatus {
+  unsettled
+  settled
+}
+
+enum VendorSettlementStatus {
+  draft
+  paid
+  cancelled
+}
+
+/// Delta applied to quantity_remaining. Use returned_to_vendor for vendor take-back (not customer returns).
+enum StockAdjustmentReason {
+  damaged
+  returned_to_vendor
+  expired
+  correction
+}
+
+/// Sign convention: positive increases amount owed TO the vendor; negative decreases it.
+enum VendorLedgerType {
+  sale_credit
+  settlement_debit
+  advance
+  discount
+  damage
+  return_reversal
+  shipping
+  adjustment
+}
+
+enum AuditAction {
+  create
+  update
+  delete
+  void
+  settle
+  cancel
+}
+
+model tenant {
+  id          Int          @id @default(autoincrement())
+  store_name  String
+  owner_name  String
+  owner_phone String
+  /// Store operating currency (snapshot onto subscriptions at purchase)
+  currency    String       @default("SYP") @db.VarChar(3)
+  status      TenantStatus @default(trial)
+  created_at  DateTime     @default(now())
+  updated_at  DateTime     @updatedAt
+
+  subscriptions            subscription[]
+  users                    user[]
+  vendor_profiles          vendor_profile[]
+  categories               category[]
+  products                 product[]
+  units                    unit[]
+  product_intakes          product_intake[]
+  product_intake_items     product_intake_item[]
+  sales                    sale[]
+  sale_items               sale_item[]
+  sale_item_allocations    sale_item_allocation[]
+  vendor_settlements       vendor_settlement[]
+  vendor_settlement_items  vendor_settlement_item[]
+  stock_adjustments        stock_adjustment[]
+  vendor_ledger_entries    vendor_ledger_entry[]
+  sale_returns             sale_return[]
+  sale_return_items        sale_return_item[]
+  sale_return_allocations  sale_return_allocation[]
+  tenant_sequences         tenant_sequence[]
+  audit_logs               audit_log[]
+
+  @@map("tenants")
+}
+
+model plan {
+  id             Int           @id @default(autoincrement())
+  name           String
+  price          Decimal       @db.Decimal(14, 2)
+  currency       String        @default("SYP") @db.VarChar(3)
+  billing_period BillingPeriod
+  features       Json?
+  is_active      Boolean       @default(true)
+  created_at     DateTime      @default(now())
+  updated_at     DateTime      @updatedAt
+
+  subscriptions subscription[]
+
+  @@map("plans")
+}
+
+model subscription {
+  id                      Int            @id @default(autoincrement())
+  tenant_id               Int
+  tenant                  tenant         @relation(fields: [tenant_id], references: [id], onDelete: Restrict)
+  plan_id                 Int
+  plan                    plan           @relation(fields: [plan_id], references: [id], onDelete: Restrict)
+  starts_at               DateTime
+  ends_at                 DateTime
+  payment_status          PaymentStatus  @default(pending)
+  price_snapshot          Decimal        @db.Decimal(14, 2)
+  currency_snapshot       String         @default("SYP") @db.VarChar(3)
+  billing_period_snapshot BillingPeriod
+  amount_paid             Decimal?       @db.Decimal(14, 2)
+  payment_method          String?
+  transaction_ref         String?        @unique
+  canceled_at             DateTime?
+  created_at              DateTime       @default(now())
+  updated_at              DateTime       @updatedAt
+
+  @@index([tenant_id, starts_at, ends_at])
+  @@index([plan_id])
+  @@map("subscriptions")
+}
+
+model user {
+  id         Int        @id @default(autoincrement())
+  tenant_id  Int?
+  tenant     tenant?    @relation(fields: [tenant_id], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  /// IFNULL(tenant_id, 0) — maintained by users_bi/bu_tenant_scope triggers (composite FKs; super_admin = 0)
+  tenant_scope Int
+  name       String
+  email      String     @unique
+  /// Store bcrypt/argon2 hash only
+  password   String
+  phone      String
+  role       UserRole
+  status     UserStatus @default(active)
+  created_at DateTime   @default(now())
+  updated_at DateTime   @updatedAt
+
+  vendor_profiles     vendor_profile[]      @relation("VendorProfileUser")
+  intakes_received    product_intake[]       @relation("IntakeReceivedBy")
+  sales_as_cashier    sale[]                @relation("SaleCashier")
+  sales_voided        sale[]                @relation("SaleVoidedBy")
+  settlements_created vendor_settlement[]   @relation("SettlementCreatedBy")
+  stock_adjustments   stock_adjustment[]    @relation("StockAdjustedBy")
+  ledger_entries      vendor_ledger_entry[] @relation("LedgerCreatedBy")
+  sale_returns        sale_return[]         @relation("SaleReturnCreatedBy")
+  audit_logs          audit_log[]
+
+  @@unique([id, tenant_scope])
+  @@index([tenant_id])
+  @@map("users")
+}
+
+model vendor_profile {
+  id                  Int       @id @default(autoincrement())
+  user_id             Int?
+  /// Composite FK so the linked user must belong to the same tenant_scope
+  user                user?     @relation("VendorProfileUser", fields: [user_id, tenant_id], references: [id, tenant_scope], onDelete: Restrict, onUpdate: Restrict)
+  tenant_id           Int
+  tenant              tenant    @relation(fields: [tenant_id], references: [id], onDelete: Restrict)
+  farm_name           String?
+  bank_name           String?
+  /// Encrypt at application layer before persist
+  bank_account_number String?
+  deleted_at          DateTime?
+  created_at          DateTime  @default(now())
+  updated_at          DateTime  @updatedAt
+
+  product_intakes       product_intake[]
+  sale_items            sale_item[]
+  vendor_settlements    vendor_settlement[]
+  vendor_ledger_entries vendor_ledger_entry[]
+
+  @@unique([id, tenant_id])
+  @@unique([user_id])
+  @@index([tenant_id])
+  @@map("vendor_profiles")
+}
+
+model category {
+  id          Int       @id @default(autoincrement())
+  tenant_id   Int
+  tenant      tenant    @relation(fields: [tenant_id], references: [id], onDelete: Restrict)
+  name        String
+  slug        String
+  /// Active = slug; soft-deleted rewritten to slug#id by DB trigger (MariaDB cannot GENERATED from AUTO_INCREMENT id)
+  slug_unique String    @db.VarChar(255)
+  deleted_at  DateTime?
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
+
+  products product[]
+
+  @@unique([id, tenant_id])
+  @@unique([tenant_id, slug_unique])
+  @@map("categories")
+}
+
+model product {
+  id               Int             @id @default(autoincrement())
+  tenant_id        Int
+  tenant           tenant          @relation(fields: [tenant_id], references: [id], onDelete: Restrict)
+  category_id      Int
+  category         category        @relation(fields: [category_id, tenant_id], references: [id, tenant_id], onDelete: Restrict)
+  name             String
+  /// Soft-delete safe uniqueness; rewritten to name#id by DB trigger on soft-delete
+  name_unique      String          @db.VarChar(255)
+  commission_type  CommissionType
+  commission_value Decimal         @db.Decimal(14, 2)
+  commission_basis CommissionBasis @default(per_unit)
+  deleted_at       DateTime?
+  created_at       DateTime        @default(now())
+  updated_at       DateTime        @updatedAt
+
+  intake_items product_intake_item[]
+  sale_items   sale_item[]
+
+  @@unique([id, tenant_id])
+  @@unique([tenant_id, name_unique])
+  @@index([category_id, tenant_id])
+  @@map("products")
+}
+
+model unit {
+  id          Int       @id @default(autoincrement())
+  tenant_id   Int
+  tenant      tenant    @relation(fields: [tenant_id], references: [id], onDelete: Restrict)
+  name_ar     String
+  name_en     String
+  slug        String
+  /// Soft-delete safe uniqueness; rewritten to slug#id by DB trigger on soft-delete
+  slug_unique String    @db.VarChar(255)
+  is_system   Boolean   @default(false)
+  deleted_at  DateTime?
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
+
+  intake_items product_intake_item[]
+  sale_items   sale_item[]
+
+  @@unique([id, tenant_id])
+  @@unique([tenant_id, slug_unique])
+  @@map("units")
+}
+
+model product_intake {
+  id          Int            @id @default(autoincrement())
+  tenant_id   Int
+  tenant      tenant         @relation(fields: [tenant_id], references: [id], onDelete: Restrict)
+  vendor_id   Int
+  vendor      vendor_profile @relation(fields: [vendor_id, tenant_id], references: [id, tenant_id], onDelete: Restrict)
+  received_by Int
+  receiver    user           @relation("IntakeReceivedBy", fields: [received_by, tenant_id], references: [id, tenant_scope], onDelete: Restrict, onUpdate: Restrict)
+  intake_date DateTime       @default(now())
+  status      IntakeStatus   @default(active)
+  created_at  DateTime       @default(now())
+  updated_at  DateTime       @updatedAt
+
+  items product_intake_item[]
+
+  @@unique([id, tenant_id])
+  @@index([tenant_id])
+  @@index([vendor_id, tenant_id])
+  @@index([received_by, tenant_id])
+  @@map("product_intakes")
+}
+
+model product_intake_item {
+  id                 Int            @id @default(autoincrement())
+  tenant_id          Int
+  tenant             tenant         @relation(fields: [tenant_id], references: [id], onDelete: Restrict)
+  product_intake_id   Int
+  product_intake      product_intake  @relation(fields: [product_intake_id, tenant_id], references: [id, tenant_id], onDelete: Restrict)
+  product_id         Int
+  product            product        @relation(fields: [product_id, tenant_id], references: [id, tenant_id], onDelete: Restrict)
+  unit_id            Int
+  unit               unit           @relation(fields: [unit_id, tenant_id], references: [id, tenant_id], onDelete: Restrict)
+  quantity_received  Decimal        @db.Decimal(12, 3)
+  /// Cached: received - sale allocations + return allocations + stock adjustment deltas. Update under FOR UPDATE.
+  quantity_remaining Decimal        @db.Decimal(12, 3)
+  created_at         DateTime       @default(now())
+  updated_at         DateTime       @updatedAt
+
+  sale_allocations   sale_item_allocation[]
+  stock_adjustments  stock_adjustment[]
+  return_allocations sale_return_allocation[]
+
+  @@unique([id, tenant_id])
+  /// Lookup lots with remaining stock (created_at is optional sort — not a FIFO rule)
+  @@index([tenant_id, product_id, quantity_remaining, created_at], map: "idx_intake_items_available")
+  @@index([product_intake_id, tenant_id])
+  @@index([unit_id, tenant_id])
+  @@map("product_intake_items")
+}
+
+model sale {
+  id                     Int        @id @default(autoincrement())
+  tenant_id              Int
+  tenant                 tenant     @relation(fields: [tenant_id], references: [id], onDelete: Restrict)
+  cashier_id             Int
+  cashier                user       @relation("SaleCashier", fields: [cashier_id, tenant_id], references: [id, tenant_scope], onDelete: Restrict, onUpdate: Restrict)
+  invoice_number         String
+  sold_at                DateTime   @default(now())
+  total_amount           Decimal    @db.Decimal(14, 2)
+  store_commission_total Decimal    @db.Decimal(14, 2)
+  vendor_payable_total   Decimal    @db.Decimal(14, 2)
+  status                 SaleStatus @default(completed)
+  voided_at              DateTime?
+  voided_by              Int?
+  /// Composite FK (voided_by, tenant_id) — ON DELETE RESTRICT (SET NULL would null tenant_id)
+  voider                 user?      @relation("SaleVoidedBy", fields: [voided_by, tenant_id], references: [id, tenant_scope], onDelete: Restrict, onUpdate: Restrict)
+  void_reason            String?
+  created_at             DateTime   @default(now())
+  updated_at             DateTime   @updatedAt
+
+  items   sale_item[]
+  returns sale_return[]
+
+  @@unique([id, tenant_id])
+  @@unique([tenant_id, invoice_number])
+  @@index([tenant_id, status, sold_at], map: "idx_sales_tenant_sold")
+  @@index([cashier_id, tenant_id])
+  @@map("sales")
+}
+
+/// One sale line = exactly one vendor. Lot pick is free (any remaining intake); split lines if multiple vendors.
+model sale_item {
+  id                Int              @id @default(autoincrement())
+  tenant_id         Int
+  tenant            tenant           @relation(fields: [tenant_id], references: [id], onDelete: Restrict)
+  sale_id           Int
+  sale              sale             @relation(fields: [sale_id, tenant_id], references: [id, tenant_id], onDelete: Restrict)
+  product_id        Int
+  product           product          @relation(fields: [product_id, tenant_id], references: [id, tenant_id], onDelete: Restrict)
+  vendor_id         Int
+  vendor            vendor_profile   @relation(fields: [vendor_id, tenant_id], references: [id, tenant_id], onDelete: Restrict)
+  unit_id           Int
+  unit              unit             @relation(fields: [unit_id, tenant_id], references: [id, tenant_id], onDelete: Restrict)
+  quantity          Decimal          @db.Decimal(12, 3)
+  unit_price        Decimal          @db.Decimal(14, 2)
+  commission_type   CommissionType
+  commission_value  Decimal          @db.Decimal(14, 2)
+  commission_basis  CommissionBasis  @default(per_unit)
+  line_total        Decimal          @db.Decimal(14, 2)
+  store_amount      Decimal          @db.Decimal(14, 2)
+  vendor_amount     Decimal          @db.Decimal(14, 2)
+  settlement_status SettlementStatus @default(unsettled)
+  created_at        DateTime         @default(now())
+  updated_at        DateTime         @updatedAt
+
+  allocations      sale_item_allocation[]
+  settlement_items vendor_settlement_item[]
+  return_items     sale_return_item[]
+
+  @@unique([id, tenant_id])
+  @@index([tenant_id, vendor_id, settlement_status], map: "idx_si_vendor_settle")
+  @@index([sale_id, tenant_id])
+  @@index([product_id, tenant_id])
+  @@map("sale_items")
+}
+
+model sale_item_allocation {
+  id                    Int                @id @default(autoincrement())
+  tenant_id             Int
+  tenant                tenant             @relation(fields: [tenant_id], references: [id], onDelete: Restrict)
+  sale_item_id          Int
+  sale_item             sale_item          @relation(fields: [sale_item_id, tenant_id], references: [id, tenant_id], onDelete: Restrict)
+  product_intake_item_id Int
+  product_intake_item    product_intake_item @relation(fields: [product_intake_item_id, tenant_id], references: [id, tenant_id], onDelete: Restrict)
+  quantity              Decimal            @db.Decimal(12, 3)
+  created_at            DateTime           @default(now())
+
+  return_allocations sale_return_allocation[]
+
+  @@unique([id, tenant_id])
+  @@unique([sale_item_id, product_intake_item_id])
+  /// Required by tenant_id FK (no other left-prefix covers bare tenant_id)
+  @@index([tenant_id])
+  /// Covers composite FK (sale_item_id, tenant_id) — do not drop
+  @@index([sale_item_id, tenant_id])
+  @@index([product_intake_item_id, tenant_id])
+  @@map("sale_item_allocations")
+}
+
+model vendor_settlement {
+  id                Int                    @id @default(autoincrement())
+  tenant_id         Int
+  tenant            tenant                 @relation(fields: [tenant_id], references: [id], onDelete: Restrict)
+  vendor_id         Int
+  vendor            vendor_profile         @relation(fields: [vendor_id, tenant_id], references: [id, tenant_id], onDelete: Restrict)
+  created_by        Int
+  creator           user                   @relation("SettlementCreatedBy", fields: [created_by, tenant_id], references: [id, tenant_scope], onDelete: Restrict, onUpdate: Restrict)
+  period_start      DateTime?
+  period_end        DateTime?
+  /// Sum of linked sale_item vendor amounts
+  gross_amount      Decimal                @db.Decimal(14, 2)
+  /// Advances/damage/shipping/discounts applied on this settlement
+  deductions_amount Decimal                @default(0) @db.Decimal(14, 2)
+  /// Must equal gross_amount - deductions_amount
+  net_amount        Decimal                @db.Decimal(14, 2)
+  status            VendorSettlementStatus @default(draft)
+  paid_at           DateTime?
+  notes             String?
+  created_at        DateTime               @default(now())
+  updated_at        DateTime               @updatedAt
+
+  items vendor_settlement_item[]
+
+  @@unique([id, tenant_id])
+  @@index([tenant_id, vendor_id, status], map: "idx_settle_vendor_status")
+  @@index([created_by, tenant_id])
+  @@map("vendor_settlements")
+}
+
+/// On cancel: delete these rows in a transaction and set sale_items back to unsettled. Never hard-delete paid settlements.
+model vendor_settlement_item {
+  id            Int               @id @default(autoincrement())
+  tenant_id     Int
+  tenant        tenant            @relation(fields: [tenant_id], references: [id], onDelete: Restrict)
+  settlement_id Int
+  settlement    vendor_settlement @relation(fields: [settlement_id, tenant_id], references: [id, tenant_id], onDelete: Restrict)
+  sale_item_id  Int               @unique
+  sale_item     sale_item         @relation(fields: [sale_item_id, tenant_id], references: [id, tenant_id], onDelete: Restrict)
+  amount        Decimal           @db.Decimal(14, 2)
+  created_at    DateTime          @default(now())
+
+  @@index([tenant_id])
+  @@index([settlement_id, tenant_id])
+  @@map("vendor_settlement_items")
+}
+
+/// quantity is a signed delta applied to quantity_remaining: negative reduces stock, positive increases it.
+/// Example: damaged -5; correction +2. reason returned_to_vendor = take-back to vendor (not customer return).
+model stock_adjustment {
+  id                    Int                   @id @default(autoincrement())
+  tenant_id             Int
+  tenant                tenant                @relation(fields: [tenant_id], references: [id], onDelete: Restrict)
+  product_intake_item_id Int
+  product_intake_item    product_intake_item    @relation(fields: [product_intake_item_id, tenant_id], references: [id, tenant_id], onDelete: Restrict)
+  quantity              Decimal               @db.Decimal(12, 3)
+  reason                StockAdjustmentReason
+  notes                 String?
+  created_by            Int
+  creator               user                  @relation("StockAdjustedBy", fields: [created_by, tenant_id], references: [id, tenant_scope], onDelete: Restrict, onUpdate: Restrict)
+  created_at            DateTime              @default(now())
+
+  @@index([tenant_id])
+  @@index([product_intake_item_id, tenant_id])
+  @@index([created_by, tenant_id])
+  @@map("stock_adjustments")
+}
+
+/// Append-only ledger. Correct mistakes with a reversing entry, never UPDATE/DELETE.
+model vendor_ledger_entry {
+  id         Int              @id @default(autoincrement())
+  tenant_id  Int
+  tenant     tenant           @relation(fields: [tenant_id], references: [id], onDelete: Restrict)
+  vendor_id  Int
+  vendor     vendor_profile   @relation(fields: [vendor_id, tenant_id], references: [id, tenant_id], onDelete: Restrict)
+  entry_type VendorLedgerType
+  /// Positive = increases payable to vendor; negative = decreases it
+  amount     Decimal          @db.Decimal(14, 2)
+  /// Both null (manual entry) or both set — enforced by chk_ledger_ref
+  ref_type   String?
+  ref_id     Int?
+  notes      String?
+  created_by Int?
+  /// Composite FK — RESTRICT (SET NULL would null tenant_id)
+  creator    user?            @relation("LedgerCreatedBy", fields: [created_by, tenant_id], references: [id, tenant_scope], onDelete: Restrict, onUpdate: Restrict)
+  created_at DateTime         @default(now())
+
+  /// Includes vendor_id so one sale can credit multiple vendors (same ref)
+  @@unique([tenant_id, vendor_id, entry_type, ref_type, ref_id], map: "vendor_ledger_entries_uniq_ref")
+  @@index([tenant_id, vendor_id, created_at])
+  @@map("vendor_ledger_entries")
+}
+
+model sale_return {
+  id          Int      @id @default(autoincrement())
+  tenant_id   Int
+  tenant      tenant   @relation(fields: [tenant_id], references: [id], onDelete: Restrict)
+  sale_id     Int
+  sale        sale     @relation(fields: [sale_id, tenant_id], references: [id, tenant_id], onDelete: Restrict)
+  created_by  Int
+  creator     user     @relation("SaleReturnCreatedBy", fields: [created_by, tenant_id], references: [id, tenant_scope], onDelete: Restrict, onUpdate: Restrict)
+  reason      String?
+  returned_at DateTime @default(now())
+  created_at  DateTime @default(now())
+
+  items sale_return_item[]
+
+  @@unique([id, tenant_id])
+  @@index([tenant_id, sale_id])
+  @@index([created_by, tenant_id])
+  @@map("sale_returns")
+}
+
+model sale_return_item {
+  id             Int         @id @default(autoincrement())
+  tenant_id      Int
+  tenant         tenant      @relation(fields: [tenant_id], references: [id], onDelete: Restrict)
+  sale_return_id Int
+  sale_return    sale_return @relation(fields: [sale_return_id, tenant_id], references: [id, tenant_id], onDelete: Restrict)
+  sale_item_id   Int
+  sale_item      sale_item   @relation(fields: [sale_item_id, tenant_id], references: [id, tenant_id], onDelete: Restrict)
+  quantity       Decimal     @db.Decimal(12, 3)
+  store_amount   Decimal     @db.Decimal(14, 2)
+  vendor_amount  Decimal     @db.Decimal(14, 2)
+  created_at     DateTime    @default(now())
+
+  allocations sale_return_allocation[]
+
+  @@unique([id, tenant_id])
+  @@index([tenant_id])
+  @@index([sale_return_id, tenant_id])
+  @@index([sale_item_id, tenant_id])
+  @@map("sale_return_items")
+}
+
+/// Restores quantity to the same intake lots that were consumed on sale (supports partial returns).
+model sale_return_allocation {
+  id                     Int                  @id @default(autoincrement())
+  tenant_id              Int
+  tenant                 tenant               @relation(fields: [tenant_id], references: [id], onDelete: Restrict)
+  sale_return_item_id    Int
+  sale_return_item       sale_return_item     @relation(fields: [sale_return_item_id, tenant_id], references: [id, tenant_id], onDelete: Restrict)
+  sale_item_allocation_id Int
+  sale_item_allocation   sale_item_allocation @relation(fields: [sale_item_allocation_id, tenant_id], references: [id, tenant_id], onDelete: Restrict)
+  product_intake_item_id  Int
+  product_intake_item     product_intake_item   @relation(fields: [product_intake_item_id, tenant_id], references: [id, tenant_id], onDelete: Restrict)
+  quantity               Decimal              @db.Decimal(12, 3)
+  created_at             DateTime             @default(now())
+
+  @@unique([sale_return_item_id, sale_item_allocation_id])
+  @@index([tenant_id])
+  @@index([product_intake_item_id, tenant_id])
+  @@map("sale_return_allocations")
+}
+
+model tenant_sequence {
+  id         Int    @id @default(autoincrement())
+  tenant_id  Int
+  tenant     tenant @relation(fields: [tenant_id], references: [id], onDelete: Restrict)
+  name       String
+  next_value Int    @default(1)
+
+  @@unique([tenant_id, name])
+  @@map("tenant_sequences")
+}
+
+model audit_log {
+  id         Int         @id @default(autoincrement())
+  tenant_id  Int?
+  tenant     tenant?     @relation(fields: [tenant_id], references: [id], onDelete: SetNull)
+  user_id    Int?
+  user       user?       @relation(fields: [user_id], references: [id], onDelete: SetNull)
+  entity     String
+  entity_id  Int
+  action     AuditAction
+  old_data   Json?
+  new_data   Json?
+  ip_address String?
+  request_id String?
+  created_at DateTime    @default(now())
+
+  @@index([tenant_id, entity, entity_id])
+  @@index([user_id])
+  @@index([created_at])
+  @@index([request_id])
+  @@map("audit_logs")
 }
