@@ -1,0 +1,19 @@
+# Local notes / exports
+docs/
+scripts/
+*.docx
+SYSTEM_REPORT.md
+SYSTEM_OVERVIEW.md
+FRONTEND_STRUCTURE.md
+frontend/FRONTEND_STRUCTURE.md
+
+# Agent skill packs — keep locally for IDE help; do not push
+**/skills-lock.json
+**/.agents/
+**/.claude/
+**/.cursor/
+**/.windsurf/
+**/.devin/
+
+# Word lock files
+~$*

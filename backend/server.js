@@ -3,6 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import authRoutes from './src/routes/authRoutes.js';
+import userRoutes from './src/routes/userRoutes.js';
 import { verifyToken } from './src/middlewares/authMiddleware.js';
 
 const app = express();
@@ -14,7 +15,7 @@ app.use(express.json());
 
 // Routes
 app.use('/api/auth', authRoutes);
-
+app.use('/api/users', userRoutes);
 app.get('/', verifyToken, (req, res) => {
     res.json( { user:req.user });
   });

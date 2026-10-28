@@ -19,12 +19,12 @@ export const verifyToken = (req, res, next) => {
   }
 };
 
-// middleware to check if the user is a super admin
-export const requireSuperAdmin = (req, res, next) => {
-  if (req.user && req.user.role === 'super_admin') {
+
+// middleware to check if the user has the required role
+export const requireRole = (role) => (req, res, next) => {
+  if (req.user && req.user.role === role) {
     next();
   } else {
-    return res.status(403).json({ success: false, message: 'غيرحاصل على صلاحيات المدير العام (Super Admin).' });
+    return res.status(403).json({ success: false, message: `ليس لديك صلاحيات ${role}.` });
   }
 };
-
