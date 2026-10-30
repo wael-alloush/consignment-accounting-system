@@ -9,13 +9,19 @@ export const apiClient = axios.create({
 });
 
 apiClient.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
-  const tenantId = localStorage.getItem('tenantId');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  if (tenantId) {
-    config.headers['X-Tenant-Id'] = tenantId;
+  const url = String(config.url || '');
+  const isAuthPublic = url.includes('/auth/login') || url.includes('/auth/register');
+
+  // don't attach old token to login/register paths
+  if (!isAuthPublic) {
+    const token = localStorage.getItem('token');
+    const tenantId = localStorage.getItem('tenantId');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    if (tenantId) {
+      config.headers['X-Tenant-Id'] = tenantId;
+    }
   }
   return config;
 });

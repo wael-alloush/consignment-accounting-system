@@ -1,0 +1,614 @@
+[
+  {
+    "id": 1,
+    "header": "صفحة الغلاف",
+    "type": "صفحة الغلاف",
+    "status": "قيد التنفيذ",
+    "target": "18",
+    "limit": "5",
+    "reviewer": "Eddie Lake"
+  },
+  {
+    "id": 2,
+    "header": "جدول المحتويات",
+    "type": "جدول المحتويات",
+    "status": "مكتمل",
+    "target": "29",
+    "limit": "24",
+    "reviewer": "Eddie Lake"
+  },
+  {
+    "id": 3,
+    "header": "الملخص التنفيذي",
+    "type": "سرد",
+    "status": "مكتمل",
+    "target": "10",
+    "limit": "13",
+    "reviewer": "Eddie Lake"
+  },
+  {
+    "id": 4,
+    "header": "النهج التقني",
+    "type": "سرد",
+    "status": "مكتمل",
+    "target": "27",
+    "limit": "23",
+    "reviewer": "Jamik Tashpulatov"
+  },
+  {
+    "id": 5,
+    "header": "التصميم",
+    "type": "سرد",
+    "status": "قيد التنفيذ",
+    "target": "2",
+    "limit": "16",
+    "reviewer": "Jamik Tashpulatov"
+  },
+  {
+    "id": 6,
+    "header": "القدرات",
+    "type": "سرد",
+    "status": "قيد التنفيذ",
+    "target": "20",
+    "limit": "8",
+    "reviewer": "Jamik Tashpulatov"
+  },
+  {
+    "id": 7,
+    "header": "التكامل مع الأنظمة الحالية",
+    "type": "سرد",
+    "status": "قيد التنفيذ",
+    "target": "19",
+    "limit": "21",
+    "reviewer": "Jamik Tashpulatov"
+  },
+  {
+    "id": 8,
+    "header": "الابتكار والمزايا",
+    "type": "سرد",
+    "status": "مكتمل",
+    "target": "25",
+    "limit": "26",
+    "reviewer": "تعيين مراجع"
+  },
+  {
+    "id": 9,
+    "header": "نظرة عامة على حلول EMR المبتكرة",
+    "type": "محتوى تقني",
+    "status": "مكتمل",
+    "target": "7",
+    "limit": "23",
+    "reviewer": "تعيين مراجع"
+  },
+  {
+    "id": 10,
+    "header": "الخوارزميات المتقدمة وتعلم الآلة",
+    "type": "سرد",
+    "status": "مكتمل",
+    "target": "30",
+    "limit": "28",
+    "reviewer": "تعيين مراجع"
+  },
+  {
+    "id": 11,
+    "header": "بروتوكولات الاتصال التكيفية",
+    "type": "سرد",
+    "status": "مكتمل",
+    "target": "9",
+    "limit": "31",
+    "reviewer": "تعيين مراجع"
+  },
+  {
+    "id": 12,
+    "header": "المزايا مقارنة بالتقنيات الحالية",
+    "type": "سرد",
+    "status": "مكتمل",
+    "target": "12",
+    "limit": "0",
+    "reviewer": "تعيين مراجع"
+  },
+  {
+    "id": 13,
+    "header": "الأداء السابق",
+    "type": "سرد",
+    "status": "مكتمل",
+    "target": "22",
+    "limit": "33",
+    "reviewer": "تعيين مراجع"
+  },
+  {
+    "id": 14,
+    "header": "ملاحظات العملاء ومستويات الرضا",
+    "type": "سرد",
+    "status": "مكتمل",
+    "target": "15",
+    "limit": "34",
+    "reviewer": "تعيين مراجع"
+  },
+  {
+    "id": 15,
+    "header": "تحديات التنفيذ والحلول",
+    "type": "سرد",
+    "status": "مكتمل",
+    "target": "3",
+    "limit": "35",
+    "reviewer": "تعيين مراجع"
+  },
+  {
+    "id": 16,
+    "header": "إجراءات الأمان وسياسات حماية البيانات",
+    "type": "سرد",
+    "status": "قيد التنفيذ",
+    "target": "6",
+    "limit": "36",
+    "reviewer": "تعيين مراجع"
+  },
+  {
+    "id": 17,
+    "header": "القابلية للتوسع والاستعداد للمستقبل",
+    "type": "سرد",
+    "status": "مكتمل",
+    "target": "4",
+    "limit": "37",
+    "reviewer": "تعيين مراجع"
+  },
+  {
+    "id": 18,
+    "header": "تحليل التكلفة والعائد",
+    "type": "لغة بسيطة",
+    "status": "مكتمل",
+    "target": "14",
+    "limit": "38",
+    "reviewer": "تعيين مراجع"
+  },
+  {
+    "id": 19,
+    "header": "تدريب المستخدمين وتجربة الإعداد",
+    "type": "سرد",
+    "status": "مكتمل",
+    "target": "17",
+    "limit": "39",
+    "reviewer": "تعيين مراجع"
+  },
+  {
+    "id": 20,
+    "header": "خارطة طريق التطوير المستقبلية",
+    "type": "سرد",
+    "status": "مكتمل",
+    "target": "11",
+    "limit": "40",
+    "reviewer": "تعيين مراجع"
+  },
+  {
+    "id": 21,
+    "header": "نظرة عامة على معمارية النظام",
+    "type": "محتوى تقني",
+    "status": "قيد التنفيذ",
+    "target": "24",
+    "limit": "18",
+    "reviewer": "Maya Johnson"
+  },
+  {
+    "id": 22,
+    "header": "خطة إدارة المخاطر",
+    "type": "سرد",
+    "status": "مكتمل",
+    "target": "15",
+    "limit": "22",
+    "reviewer": "Carlos Rodriguez"
+  },
+  {
+    "id": 23,
+    "header": "وثائق الامتثال",
+    "type": "قانوني",
+    "status": "قيد التنفيذ",
+    "target": "31",
+    "limit": "27",
+    "reviewer": "Sarah Chen"
+  },
+  {
+    "id": 24,
+    "header": "توثيق واجهة البرمجة",
+    "type": "محتوى تقني",
+    "status": "مكتمل",
+    "target": "8",
+    "limit": "12",
+    "reviewer": "Raj Patel"
+  },
+  {
+    "id": 25,
+    "header": "نماذج واجهة المستخدم",
+    "type": "مرئي",
+    "status": "قيد التنفيذ",
+    "target": "19",
+    "limit": "25",
+    "reviewer": "Leila Ahmadi"
+  },
+  {
+    "id": 26,
+    "header": "مخطط قاعدة البيانات",
+    "type": "محتوى تقني",
+    "status": "مكتمل",
+    "target": "22",
+    "limit": "20",
+    "reviewer": "Thomas Wilson"
+  },
+  {
+    "id": 27,
+    "header": "منهجية الاختبار",
+    "type": "محتوى تقني",
+    "status": "قيد التنفيذ",
+    "target": "17",
+    "limit": "14",
+    "reviewer": "تعيين مراجع"
+  },
+  {
+    "id": 28,
+    "header": "استراتيجية النشر",
+    "type": "سرد",
+    "status": "مكتمل",
+    "target": "26",
+    "limit": "30",
+    "reviewer": "Eddie Lake"
+  },
+  {
+    "id": 29,
+    "header": "تفصيل الميزانية",
+    "type": "مالي",
+    "status": "قيد التنفيذ",
+    "target": "13",
+    "limit": "16",
+    "reviewer": "Jamik Tashpulatov"
+  },
+  {
+    "id": 30,
+    "header": "تحليل السوق",
+    "type": "بحث",
+    "status": "مكتمل",
+    "target": "29",
+    "limit": "32",
+    "reviewer": "Sophia Martinez"
+  },
+  {
+    "id": 31,
+    "header": "مقارنة المنافسين",
+    "type": "بحث",
+    "status": "قيد التنفيذ",
+    "target": "21",
+    "limit": "19",
+    "reviewer": "تعيين مراجع"
+  },
+  {
+    "id": 32,
+    "header": "خطة الصيانة",
+    "type": "محتوى تقني",
+    "status": "مكتمل",
+    "target": "16",
+    "limit": "23",
+    "reviewer": "Alex Thompson"
+  },
+  {
+    "id": 33,
+    "header": "شخصيات المستخدمين",
+    "type": "بحث",
+    "status": "قيد التنفيذ",
+    "target": "27",
+    "limit": "24",
+    "reviewer": "Nina Patel"
+  },
+  {
+    "id": 34,
+    "header": "امتثال إمكانية الوصول",
+    "type": "قانوني",
+    "status": "مكتمل",
+    "target": "18",
+    "limit": "21",
+    "reviewer": "تعيين مراجع"
+  },
+  {
+    "id": 35,
+    "header": "مقاييس الأداء",
+    "type": "محتوى تقني",
+    "status": "قيد التنفيذ",
+    "target": "23",
+    "limit": "26",
+    "reviewer": "David Kim"
+  },
+  {
+    "id": 36,
+    "header": "خطة التعافي من الكوارث",
+    "type": "محتوى تقني",
+    "status": "مكتمل",
+    "target": "14",
+    "limit": "17",
+    "reviewer": "Jamik Tashpulatov"
+  },
+  {
+    "id": 37,
+    "header": "تكاملات الطرف الثالث",
+    "type": "محتوى تقني",
+    "status": "قيد التنفيذ",
+    "target": "25",
+    "limit": "28",
+    "reviewer": "Eddie Lake"
+  },
+  {
+    "id": 38,
+    "header": "ملخص ملاحظات المستخدمين",
+    "type": "بحث",
+    "status": "مكتمل",
+    "target": "20",
+    "limit": "15",
+    "reviewer": "تعيين مراجع"
+  },
+  {
+    "id": 39,
+    "header": "استراتيجية التوطين",
+    "type": "سرد",
+    "status": "قيد التنفيذ",
+    "target": "12",
+    "limit": "19",
+    "reviewer": "Maria Garcia"
+  },
+  {
+    "id": 40,
+    "header": "التوافق مع الجوال",
+    "type": "محتوى تقني",
+    "status": "مكتمل",
+    "target": "28",
+    "limit": "31",
+    "reviewer": "James Wilson"
+  },
+  {
+    "id": 41,
+    "header": "خطة ترحيل البيانات",
+    "type": "محتوى تقني",
+    "status": "قيد التنفيذ",
+    "target": "19",
+    "limit": "22",
+    "reviewer": "تعيين مراجع"
+  },
+  {
+    "id": 42,
+    "header": "بروتوكولات ضمان الجودة",
+    "type": "محتوى تقني",
+    "status": "مكتمل",
+    "target": "30",
+    "limit": "33",
+    "reviewer": "Priya Singh"
+  },
+  {
+    "id": 43,
+    "header": "تحليل أصحاب المصلحة",
+    "type": "بحث",
+    "status": "قيد التنفيذ",
+    "target": "11",
+    "limit": "14",
+    "reviewer": "Eddie Lake"
+  },
+  {
+    "id": 44,
+    "header": "تقييم الأثر البيئي",
+    "type": "بحث",
+    "status": "مكتمل",
+    "target": "24",
+    "limit": "27",
+    "reviewer": "تعيين مراجع"
+  },
+  {
+    "id": 45,
+    "header": "حقوق الملكية الفكرية",
+    "type": "قانوني",
+    "status": "قيد التنفيذ",
+    "target": "17",
+    "limit": "20",
+    "reviewer": "Sarah Johnson"
+  },
+  {
+    "id": 46,
+    "header": "إطار دعم العملاء",
+    "type": "سرد",
+    "status": "مكتمل",
+    "target": "22",
+    "limit": "25",
+    "reviewer": "Jamik Tashpulatov"
+  },
+  {
+    "id": 47,
+    "header": "استراتيجية التحكم بالإصدارات",
+    "type": "محتوى تقني",
+    "status": "قيد التنفيذ",
+    "target": "15",
+    "limit": "18",
+    "reviewer": "تعيين مراجع"
+  },
+  {
+    "id": 48,
+    "header": "خط التكامل المستمر",
+    "type": "محتوى تقني",
+    "status": "مكتمل",
+    "target": "26",
+    "limit": "29",
+    "reviewer": "Michael Chen"
+  },
+  {
+    "id": 49,
+    "header": "الامتثال التنظيمي",
+    "type": "قانوني",
+    "status": "قيد التنفيذ",
+    "target": "13",
+    "limit": "16",
+    "reviewer": "تعيين مراجع"
+  },
+  {
+    "id": 50,
+    "header": "نظام مصادقة المستخدمين",
+    "type": "محتوى تقني",
+    "status": "مكتمل",
+    "target": "28",
+    "limit": "31",
+    "reviewer": "Eddie Lake"
+  },
+  {
+    "id": 51,
+    "header": "إطار تحليل البيانات",
+    "type": "محتوى تقني",
+    "status": "قيد التنفيذ",
+    "target": "21",
+    "limit": "24",
+    "reviewer": "Jamik Tashpulatov"
+  },
+  {
+    "id": 52,
+    "header": "البنية التحتية السحابية",
+    "type": "محتوى تقني",
+    "status": "مكتمل",
+    "target": "16",
+    "limit": "19",
+    "reviewer": "تعيين مراجع"
+  },
+  {
+    "id": 53,
+    "header": "إجراءات أمن الشبكة",
+    "type": "محتوى تقني",
+    "status": "قيد التنفيذ",
+    "target": "29",
+    "limit": "32",
+    "reviewer": "Lisa Wong"
+  },
+  {
+    "id": 54,
+    "header": "الجدول الزمني للمشروع",
+    "type": "تخطيط",
+    "status": "مكتمل",
+    "target": "14",
+    "limit": "17",
+    "reviewer": "Eddie Lake"
+  },
+  {
+    "id": 55,
+    "header": "توزيع الموارد",
+    "type": "تخطيط",
+    "status": "قيد التنفيذ",
+    "target": "27",
+    "limit": "30",
+    "reviewer": "تعيين مراجع"
+  },
+  {
+    "id": 56,
+    "header": "هيكل الفريق والأدوار",
+    "type": "تخطيط",
+    "status": "مكتمل",
+    "target": "20",
+    "limit": "23",
+    "reviewer": "Jamik Tashpulatov"
+  },
+  {
+    "id": 57,
+    "header": "بروتوكولات التواصل",
+    "type": "تخطيط",
+    "status": "قيد التنفيذ",
+    "target": "15",
+    "limit": "18",
+    "reviewer": "تعيين مراجع"
+  },
+  {
+    "id": 58,
+    "header": "مقاييس النجاح",
+    "type": "تخطيط",
+    "status": "مكتمل",
+    "target": "30",
+    "limit": "33",
+    "reviewer": "Eddie Lake"
+  },
+  {
+    "id": 59,
+    "header": "دعم التدويل",
+    "type": "محتوى تقني",
+    "status": "قيد التنفيذ",
+    "target": "23",
+    "limit": "26",
+    "reviewer": "Jamik Tashpulatov"
+  },
+  {
+    "id": 60,
+    "header": "إجراءات النسخ الاحتياطي والاستعادة",
+    "type": "محتوى تقني",
+    "status": "مكتمل",
+    "target": "18",
+    "limit": "21",
+    "reviewer": "تعيين مراجع"
+  },
+  {
+    "id": 61,
+    "header": "نظام المراقبة والتنبيهات",
+    "type": "محتوى تقني",
+    "status": "قيد التنفيذ",
+    "target": "25",
+    "limit": "28",
+    "reviewer": "Daniel Park"
+  },
+  {
+    "id": 62,
+    "header": "إرشادات مراجعة الكود",
+    "type": "محتوى تقني",
+    "status": "مكتمل",
+    "target": "12",
+    "limit": "15",
+    "reviewer": "Eddie Lake"
+  },
+  {
+    "id": 63,
+    "header": "معايير التوثيق",
+    "type": "محتوى تقني",
+    "status": "قيد التنفيذ",
+    "target": "27",
+    "limit": "30",
+    "reviewer": "Jamik Tashpulatov"
+  },
+  {
+    "id": 64,
+    "header": "عملية إدارة الإصدارات",
+    "type": "تخطيط",
+    "status": "مكتمل",
+    "target": "22",
+    "limit": "25",
+    "reviewer": "تعيين مراجع"
+  },
+  {
+    "id": 65,
+    "header": "مصفوفة أولويات الميزات",
+    "type": "تخطيط",
+    "status": "قيد التنفيذ",
+    "target": "19",
+    "limit": "22",
+    "reviewer": "Emma Davis"
+  },
+  {
+    "id": 66,
+    "header": "تقييم الدين التقني",
+    "type": "محتوى تقني",
+    "status": "مكتمل",
+    "target": "24",
+    "limit": "27",
+    "reviewer": "Eddie Lake"
+  },
+  {
+    "id": 67,
+    "header": "تخطيط السعة",
+    "type": "تخطيط",
+    "status": "قيد التنفيذ",
+    "target": "21",
+    "limit": "24",
+    "reviewer": "Jamik Tashpulatov"
+  },
+  {
+    "id": 68,
+    "header": "اتفاقيات مستوى الخدمة",
+    "type": "قانوني",
+    "status": "مكتمل",
+    "target": "26",
+    "limit": "29",
+    "reviewer": "تعيين مراجع"
+  }
+]

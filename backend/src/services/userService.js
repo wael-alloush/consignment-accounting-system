@@ -36,4 +36,32 @@ class userService {
   }
 }
 
-export default new userService();
+class superAdminService {
+  async createSuperAdmin(data) {
+      const { name, email, password, role, phone } = data;
+      const existingSuperAdmin = await prisma.user.findUnique({
+          where: { email },
+      });
+      if (existingSuperAdmin) {
+          throw new Error('البريد الإلكتروني مستخدم بالفعل');
+      }
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      const superAdmin = await prisma.user.create({
+          data: {
+              name,
+              email,
+              password: hashedPassword,
+              role,
+              phone,
+              status: 'active',
+              tenant_id: null,
+              tenant_scope: 0,
+          },
+      })
+      const { password: _, ...superAdminData } = superAdmin;
+      return superAdminData;
+  }
+}
+
+export default [new userService(), new superAdminService()];

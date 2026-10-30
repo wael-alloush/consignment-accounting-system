@@ -1,9 +1,9 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import AuthLayout from './layouts/AuthLayout.jsx';
 import LoginPage from '../features/auth/pages/LoginPage.jsx';
-import LoginHomePage from '../features/auth/pages/LoginHomePage.jsx';
 import RequireAuth from '../shared/guards/RequireAuth.jsx';
 import { useUserStore } from '../shared/store/useUserStore.js';
+import DashboardPage from './dashboard/DashboardPage.jsx';
 
 function PublicOnly({ children }) {
   const isAuthenticated = useUserStore((s) => s.isAuthenticated);
@@ -15,7 +15,8 @@ function PublicOnly({ children }) {
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <div >
+    <BrowserRouter dir="rtl">
       <Routes>
         <Route
           element={
@@ -31,7 +32,7 @@ export default function App() {
           path="/"
           element={
             <RequireAuth>
-              <LoginHomePage />
+              <DashboardPage />
             </RequireAuth>
           }
         />
@@ -39,5 +40,6 @@ export default function App() {
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
-  );
+    </div>
+  )
 }
