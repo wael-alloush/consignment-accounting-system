@@ -1,5 +1,5 @@
 
-import { NavDocuments } from "@/components/nav-documents"
+// import { NavDocuments } from "@/components/nav-documents"
 import { NavMain } from "@/components/nav-main"
 import { NavSecondary } from "@/components/nav-secondary"
 import { NavUser } from "@/components/nav-user"
@@ -12,111 +12,14 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { LayoutDashboardIcon, ListIcon, ChartBarIcon, FolderIcon, UsersIcon, CameraIcon, FileTextIcon, Settings2Icon, CircleHelpIcon, SearchIcon, DatabaseIcon, FileChartColumnIcon, FileIcon, CommandIcon } from "lucide-react"
+import { Settings2Icon, CircleHelpIcon, SearchIcon } from "lucide-react"
 import { useUserStore } from "@/shared/store/useUserStore"
+import { nav_items } from "@/configs/roles"
 import logo from "@/assets/images/logo-on-light.png"
 
 const data = {
 
-  navMain: [
-    {
-      title: "لوحة التحكم",
-      url: "#",
-      icon: (
-        <LayoutDashboardIcon
-        />
-      ),
-    },
-    {
-      title: "دورة الحياة",
-      url: "#",
-      icon: (
-        <ListIcon
-        />
-      ),
-    },
-    {
-      title: "التحليلات",
-      url: "#",
-      icon: (
-        <ChartBarIcon
-        />
-      ),
-    },
-    {
-      title: "المشاريع",
-      url: "#",
-      icon: (
-        <FolderIcon
-        />
-      ),
-    },
-    {
-      title: "الفريق",
-      url: "#",
-      icon: (
-        <UsersIcon
-        />
-      ),
-    },
-  ],
-  navClouds: [
-    {
-      title: "التقاط",
-      icon: (
-        <CameraIcon
-        />
-      ),
-      isActive: true,
-      url: "#",
-      items: [
-        {
-          title: "العروض النشطة",
-          url: "#",
-        },
-        {
-          title: "الأرشيف",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "عرض",
-      icon: (
-        <FileTextIcon
-        />
-      ),
-      url: "#",
-      items: [
-        {
-          title: "العروض النشطة",
-          url: "#",
-        },
-        {
-          title: "الأرشيف",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "الأوامر",
-      icon: (
-        <FileTextIcon
-        />
-      ),
-      url: "#",
-      items: [
-        {
-          title: "العروض النشطة",
-          url: "#",
-        },
-        {
-          title: "الأرشيف",
-          url: "#",
-        },
-      ],
-    },
-  ],
+
   navSecondary: [
     {
       title: "الإعدادات",
@@ -143,32 +46,7 @@ const data = {
       ),
     },
   ],
-  documents: [
-    {
-      name: "مكتبة البيانات",
-      url: "#",
-      icon: (
-        <DatabaseIcon
-        />
-      ),
-    },
-    {
-      name: "التقارير",
-      url: "#",
-      icon: (
-        <FileChartColumnIcon
-        />
-      ),
-    },
-    {
-      name: "مساعد المستندات",
-      url: "#",
-      icon: (
-        <FileIcon
-        />
-      ),
-    },
-  ],
+  
 }
 export function AppSidebar({
   ...props
@@ -181,6 +59,7 @@ export function AppSidebar({
     email: user.email,
     avatar: logo
   }
+  const visibleNavItems = nav_items.filter((item) => user?.role ? item.allowedRoles.includes(user.role) : false)
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
@@ -190,16 +69,16 @@ export function AppSidebar({
               className="data-[slot=sidebar-menu-button]:p-1.5!"
               render={<a href="#" />}
             >
-              {/* <CommandIcon className="size-5!" /> */}
-              <img src={logo} alt="logo" className="size-6!" />
-              <span className="text-base font-semibold">كمسيون</span>
+              
+              <img src={logo} alt="logo" className="size-15!" />
+              <span className=" font-semibold text-xl">كمسيون</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
-        <NavDocuments items={data.documents} />
+        <NavMain items={visibleNavItems} />
+        {/* <NavDocuments items={data.documents} /> */}
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>

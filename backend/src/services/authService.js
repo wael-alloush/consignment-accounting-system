@@ -25,7 +25,7 @@ class authService {
             const user = await tx.user.create({
                 data: {
                     tenant_id: tenant.id,
-                    tenant_scope: tenant.id, // مطبق بناءً على السكيما لتعدد المستأجرين
+                    tenant_scope: tenant.id,
                     name: owner_name,
                     email,
                     password: hashedPassword,
@@ -66,7 +66,7 @@ class authService {
                 role: user.role,
             },
             process.env.JWT_SECRET,
-            { expiresIn: '1d' } // 1 day
+            { expiresIn: '1h' } // 1 hour
         );
 
         return { 

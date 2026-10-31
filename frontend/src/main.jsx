@@ -12,6 +12,8 @@ createRoot(document.getElementById('root')).render(
      enableSystem
      storageKey="comm-store-theme"
      disableTransitionOnChange
+     scriptProps={{ type: "application/json" }}
+
      >
       <App />
       <Sonner />
