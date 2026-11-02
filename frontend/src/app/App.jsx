@@ -4,7 +4,7 @@ import LoginPage from '../features/auth/pages/LoginPage.jsx';
 import RequireAuth from '../shared/guards/RequireAuth.jsx';
 import { useUserStore } from '../shared/store/useUserStore.js';
 import DashboardLayout from './layouts/DashboardLayout.jsx';
-import TanentsPage from '../features/manager/pages/tanents.jsx';
+import TenantsPage from '../features/manager/pages/tenants.jsx';
 import HomeDashboard from './dashboard/HomeDashboard.jsx';
 import ProtectedRoutes from '../components/ProtectedRoute.jsx';
 import {roles} from '../configs/roles.js';
@@ -41,7 +41,7 @@ export default function App() {
         >
           <Route index element={<HomeDashboard />} />
           <Route element={<ProtectedRoutes allowedRoles={[roles.super_admin]} />} >
-            <Route path="/tanents" element={<TanentsPage />} />
+            <Route path="/tenants" element={<TenantsPage />} />
           </Route>
 
         </Route>

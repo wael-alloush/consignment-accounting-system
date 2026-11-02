@@ -1,7 +1,9 @@
-// import { apiClient } from '../../../shared/api/apiAxios.js';
-
-// /** GET /api/manager/tanents-list */
-// export async function getTanents() {
-//   const { data } = await apiClient.get('/manager/tanents');
-//   return data;
-// }
+import { apiClient } from '../../../shared/api/apiAxios.js';
+export async function getTenantsRequest() {
+  const { data } = await apiClient.get('/tenants/get-tenants');
+  if (data.success) {
+    return data.data;
+  } else {
+    throw new Error(data.message);
+  }
+}

@@ -3,109 +3,103 @@
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
-  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { Badge } from "@/components/ui/badge"
 
-const translations = {
 
-    dir: "rtl",
-    values: {
-      caption: "قائمة بفواتيرك الأخيرة.",
-      invoice: "الفاتورة",
-      status: "الحالة",
-      method: "الطريقة",
-      amount: "المبلغ",
-      paid: "مدفوع",
-      pending: "قيد الانتظار",
-      unpaid: "غير مدفوع",
-      creditCard: "بطاقة ائتمانية",
-      paypal: "PayPal",
-      bankTransfer: "تحويل بنكي",
-      total: "المجموع",
-    },
+   const values = {
+     store_name: " المتجر",
+     owner_name: " المالك",
+     plan_name: "الباقة",
+     status: "الحالة",
+    end_date: "تاريخ الانتهاء",
   }
 
 
 
-const invoices = [
-  {
-    invoice: "INV001",
-    paymentStatus: "paid",
-    totalAmount: "$250.00",
-    paymentMethod: "creditCard",
-  },
-  {
-    invoice: "INV002",
-    paymentStatus: "pending",
-    totalAmount: "$150.00",
-    paymentMethod: "paypal",
-  },
-  {
-    invoice: "INV003",
-    paymentStatus: "unpaid",
-    totalAmount: "$350.00",
-    paymentMethod: "bankTransfer",
-  },
-  {
-    invoice: "INV004",
-    paymentStatus: "paid",
-    totalAmount: "$450.00",
-    paymentMethod: "creditCard",
-  },
-  {
-    invoice: "INV005",
-    paymentStatus: "paid",
-    totalAmount: "$550.00",
-    paymentMethod: "paypal",
-  },
-  {
-    invoice: "INV006",
-    paymentStatus: "pending",
-    totalAmount: "$200.00",
-    paymentMethod: "bankTransfer",
-  },
-  {
-    invoice: "INV007",
-    paymentStatus: "unpaid",
-    totalAmount: "$300.00",
-    paymentMethod: "creditCard",
-  },
-]
+// const invoices = [
+//   {
+//     invoice: "INV001",
+//     paymentStatus: "paid",
+//     totalAmount: "$250.00",
+//     paymentMethod: "creditCard",
+//   },
+//   {
+//     invoice: "INV002",
+//     paymentStatus: "pending",
+//     totalAmount: "$150.00",
+//     paymentMethod: "paypal",
+//   },
+//   {
+//     invoice: "INV003",
+//     paymentStatus: "unpaid",
+//     totalAmount: "$350.00",
+//     paymentMethod: "bankTransfer",
+//   },
+//   {
+//     invoice: "INV004",
+//     paymentStatus: "paid",
+//     totalAmount: "$450.00",
+//     paymentMethod: "creditCard",
+//   },
+//   {
+//     invoice: "INV005",
+//     paymentStatus: "paid",
+//     totalAmount: "$550.00",
+//     paymentMethod: "paypal",
+//   },
+//   {
+//     invoice: "INV006",
+//     paymentStatus: "pending",
+//     totalAmount: "$200.00",
+//     paymentMethod: "bankTransfer",
+//   },
+//   {
+//     invoice: "INV007",
+//     paymentStatus: "unpaid",
+//     totalAmount: "$300.00",
+//     paymentMethod: "creditCard",
+//   },
+// ]
 
-export function TanentsTable() {
-
+export function TenantsTable({ tenants, loading, error }) {
+  if (loading) return <div>جاري التحميل...</div>;
+  if (error) return <div>Error: {error}</div>;
+  if (tenants.length === 0) return <div>لا يوجد متاجر</div>;
   return (
-    <Table dir="rtl">
-      <TableCaption>{translations.values.caption}</TableCaption>
-      <TableHeader>
+    <div className="border border-border rounded-lg">
+
+    <Table dir="rtl"   className="w-full "    >
+      <TableHeader className={"bg-sidebar"}>
         <TableRow>
-          <TableHead className="w-[100px]">{translations.values.invoice}</TableHead>
-          <TableHead>{translations.values.status}</TableHead>
-          <TableHead>{translations.values.method}</TableHead>
-          <TableHead className="text-right">{translations.values.amount}</TableHead>
+          <TableHead className="text-start">{values.store_name}</TableHead>
+          <TableHead>{values.owner_name}</TableHead>
+          <TableHead>{values.plan_name}</TableHead>
+          <TableHead>{values.status}</TableHead>
+          <TableHead>{values.end_date}</TableHead>
         </TableRow>
       </TableHeader>
-      <TableBody>
-        {invoices.map((invoice) => (
-          <TableRow key={invoice.invoice}>
-            <TableCell className="font-medium">{invoice.invoice}</TableCell>
-            <TableCell>{invoice.paymentStatus}</TableCell>
-            <TableCell>{invoice.paymentMethod}</TableCell>
-            <TableCell className="text-right">{invoice.totalAmount}</TableCell>
+        <TableBody >
+          {tenants.map((tenant) => (
+          <TableRow key={tenant.id} className=" border-t border-b border-border bg-background hover:bg-primary/10" >
+            <TableCell className="text-start p-3">{tenant.store_name}</TableCell>
+            <TableCell className="p-3">{tenant.owner_name}</TableCell>
+            <TableCell className="p-3">{tenant.subscriptions[0]?.plan?.name || 'لا يوجد باقة'}</TableCell>
+            <TableCell className="p-3">{<Badge className={tenant.status === 'active' ? 'bg-green-700/70 text-white '
+               : tenant.status === 'expired' || tenant.status === 'suspended' ? 'bg-red-700/70 text-white'
+               : 'bg-yellow-100 text-yellow-900 dark:bg-yellow-950 dark:text-yellow-300'}>
+                {tenant.status === 'active' ? 'فعال' : tenant.status === 'expired' ? 'منتهي'
+               : tenant.status === 'suspended' ? 'معلق' : 'لا يوجد حالة'}</Badge>}</TableCell>
+            <TableCell className="p-3">{ tenant.subscriptions[0]?.ends_at ? new Date(tenant.subscriptions[0]?.ends_at).toLocaleDateString("ar") : 'لا يوجد تاريخ انتهاء'}</TableCell>
           </TableRow>
         ))}
       </TableBody>
-      <TableFooter>
-        <TableRow>
-          <TableCell colSpan={3}>{translations.values.total}</TableCell>
-          <TableCell className="text-right">$2,500.00</TableCell>
-        </TableRow>
-      </TableFooter>
+   
     </Table>
+    </div>
   )
 }

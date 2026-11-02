@@ -66,7 +66,7 @@ class authService {
                 role: user.role,
             },
             process.env.JWT_SECRET,
-            { expiresIn: '1h' } // 1 hour
+            { expiresIn: '1w' } // 1 week
         );
 
         return { 

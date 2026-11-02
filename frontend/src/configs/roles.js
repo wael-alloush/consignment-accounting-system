@@ -9,7 +9,7 @@ export const roles = {
 export const nav_items = [
     // super admin
     {icon: HouseIcon , title: "لوحة التحكم", path: "/dashboard" , allowedRoles: [roles.super_admin]},
-    {icon: StoreIcon , title: "ادارة المتاجر", path: "/tanents" , allowedRoles: [roles.super_admin]},
+    {icon: StoreIcon , title: "ادارة المتاجر", path: "/tenants" , allowedRoles: [roles.super_admin]},
     {icon: ShoppingCartIcon , title: "الاشتراكات", path: "/subscriptions" , allowedRoles: [roles.super_admin]},
     {icon: Package2Icon , title: "الباقات", path: "/packages" , allowedRoles: [roles.super_admin]},
     // store admin
